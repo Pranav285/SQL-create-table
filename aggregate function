@@ -1,0 +1,7 @@
+SELECT 
+    SUM(salary) AS total_salary, 
+    AVG(salary) AS average_salary, 
+    COUNT(DISTINCT department) AS total_departments, 
+    MIN(salary) AS min_salary, 
+    MAX(salary) AS max_salary 
+FROM employees;
