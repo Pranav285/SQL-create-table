@@ -1,95 +1,59 @@
-CREATE TABLE IF NOT EXISTS Salesman (
-  Salesman_id TEXT PRIMARY KEY,
-  name TEXT,
-  city TEXT,
-  Comission REAL
+CREATE TABLE Students (
+    id INT PRIMARY KEY,
+    name VARCHAR(100),
+    age INT,
+    grade VARCHAR(5),
+    email VARCHAR(100) UNIQUE,
+    phone VARCHAR(15),
+    enrollment_date DATE,
+    gpa DECIMAL(3,2)
 );
 
-INSERT INTO Salesman (Salesman_id, name, city, Comission) VALUES
-  ('5001', 'James Hoog', 'New York', 0.15),
-  ('5002', 'Nail Knite', 'Paris', 0.13),
-  ('5005', 'Pit Alex', 'London', 0.11),
-  ('5006', 'Mc Lyon', 'Paris', 0.14),
-  ('5007', 'Paul Adam', 'Rome', 0.13),
-  ('5003', 'Lauson Hen', 'San Jose', 0.12);
-
-CREATE TABLE IF NOT EXISTS Customer (
-  customer_id TEXT,
-  cust_name TEXT PRIMARY KEY,
-  city TEXT,
-  grade INTEGER,
-  Salesman_id TEXT,
-  FOREIGN KEY (Salesman_id) REFERENCES Salesman(Salesman_id)
+CREATE TABLE Courses (
+    course_id INT PRIMARY KEY,
+    course_name VARCHAR(100),
+    student_id INT,
+    FOREIGN KEY (student_id) REFERENCES Students(id)
 );
 
-INSERT INTO Customer (customer_id, cust_name, city, grade, Salesman_id) VALUES
-  ('3002', 'nick rimando', 'new york', 100, '5001'),
-  ('3007', 'brad davis', 'new york', 200, '5001'),
-  ('3005', 'graham zusi', 'california', 200, '5002'),
-  ('3008', 'julian green', 'london', 300, '5002'),
-  ('3004', 'fabian johnson', 'paris', 300, '5006'),
-  ('3009', 'geoff cameron', 'berlin', 100, '5003'),
-  ('3003', 'jozy altidor', 'moscow', 200, '5007'),
-  ('3001', 'brad guzan', 'london', NULL, '5005');
-
-CREATE TABLE IF NOT EXISTS Orders (
-  ord_no TEXT PRIMARY KEY,
-  purch_amt REAL,
-  ord_date TEXT,
-  customer_id TEXT,
-  Salesman_id TEXT,
-  FOREIGN KEY (customer_id) REFERENCES Customer(customer_id),
-  FOREIGN KEY (Salesman_id) REFERENCES Salesman(Salesman_id)
-);
-
-INSERT INTO Orders (ord_no, purch_amt, ord_date, customer_id, Salesman_id) VALUES
-  ('70001', 150.5, '2012-10-05', '3005', '5002'),
-  ('70009', 270.65, '2012-09-10', '3001', '5001'),
-  ('70002', 65.26, '2012-10-05', '3002', '5003'),
-  ('70004', 110.5, '2012-08-17', '3009', '5007'),
-  ('70007', 948.5, '2012-09-10', '3005', '5005'),
-  ('70005', 2400.6, '2012-07-27', '3007', '5006');
-
-SELECT customer.cust_name, salesman.name, salesman.city
-FROM Customer
-JOIN Salesman ON Customer.city = Salesman.city;
-
-SELECT Customer.cust_name, Salesman.name
-FROM Customer
-JOIN Salesman ON Customer.Salesman_id = Salesman.Salesman_id;
-
-SELECT Orders.ord_no, Customer.cust_name, Orders.customer_id, Orders.Salesman_id
-FROM Orders
-JOIN Customer ON Orders.customer_id = Customer.customer_id
-JOIN Salesman ON Orders.Salesman_id = Salesman.Salesman_id
-WHERE Customer.city <> Salesman.city;
-
-SELECT Orders.ord_no, Customer.cust_name
-FROM Orders
-JOIN Customer ON Orders.customer_id = Customer.customer_id;
-
-SELECT Customer.cust_name AS "Customer", Customer.grade AS "Grade"
-FROM Orders
-JOIN Salesman ON Orders.Salesman_id = Salesman.Salesman_id
-JOIN Customer ON Orders.customer_id = Customer.customer_id
-WHERE Customer.grade IS NOT NULL;
-
-SELECT Customer.cust_name AS "Customer",
-Customer.city AS "City",
-Salesman.name AS "Salesman",
-Salesman.Comission
-FROM Customer
-JOIN Salesman ON Customer.Salesman_id = Salesman.Salesman_id
-WHERE Salesman.Comission BETWEEN 0.12 AND 0.14;
-
-SELECT Orders.ord_no, Customer.cust_name, Salesman.Comission AS "Commission%",
-Orders.purch_amt * Salesman.Comission AS "Commission"
-FROM Orders
-JOIN Salesman ON Orders.Salesman_id = Salesman.Salesman_id
-JOIN Customer ON Orders.customer_id = Customer.customer_id
-WHERE Customer.grade >= 200;
-
-SELECT *
-FROM Customer
-JOIN Orders ON Customer.customer_id = Orders.customer_id
-WHERE Orders.ord_date = '2012-10-05';
+INSERT INTO Students (id, name, age, grade, email, phone, enrollment_date, gpa) VALUES
+(1, 'Alice Johnson', 20, 'A', 'alice@example.com', '123-456-7890', '2022-09-01', 3.8),
+(2, 'Bob Smith', 22, 'B', 'bob@example.com', '987-654-3210', '2021-09-01', 3.4),
+(3, 'Charlie Brown', 21, 'A', 'charlie@example.com', '555-666-7777', '2023-01-15', 3.9),
+(4, 'David Wilson', 23, 'C', 'david@example.com', '444-333-2222', '2020-09-01', 2.8),
+(5, 'Emma Davis', 20, 'B', 'emma@example.com', '111-222-3333', '2022-06-10', 3.5);
+INSERT INTO Courses (course_id, course_name, student_id) VALUES
+(101, 'Math', 1),
+(102, 'Science', 2),
+(103, 'History', 3),
+(104, 'Math', 4),
+(105, 'Science', 5),
+(106, 'Math', 1),
+(107, 'Computer Science', 3),
+(108, 'Physics', 5);
+UPDATE Students 
+SET gpa = 3.6
+WHERE name = 'Emma Davis';
+DELETE FROM Students 
+WHERE name = 'David Wilson';
+SELECT * FROM Students 
+ORDER BY gpa DESC;
+SELECT * FROM Students 
+WHERE enrollment_date > '2022-01-01';
+SELECT name, gpa FROM Students 
+WHERE gpa > 3.5;
+SELECT Students.name, Students.email, Courses.course_name 
+FROM Students
+JOIN Courses ON Students.id = Courses.student_id;
+SELECT grade, COUNT(*) AS student_count
+FROM Students
+GROUP BY grade;
+SELECT AVG(gpa) AS average_gpa FROM Students;
+SELECT name, enrollment_date 
+FROM Students 
+ORDER BY enrollment_date DESC 
+LIMIT 1;
+SELECT course_name, COUNT(student_id) AS enrolled_students
+FROM Courses
+GROUP BY course_name
+HAVING COUNT(student_id) > 1;
